@@ -1,9 +1,14 @@
-import json
+import logging
 
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import Product, Order, OrderDetails
+
+
+logger = logging.getLogger(__name__)
 
 
 def banners_list_api(request):
@@ -58,29 +63,36 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
     try:
-        data = json.loads(request.body.decode())
-        print(data)
+        preorder = request.data
     except ValueError:
         return JsonResponse({'error': 'Invalid JSON'})
 
+    if 'products' not in preorder:
+        return Response({'error': 'no products found'})
+    elif isinstance(preorder.get('products'), str):
+        return Response({'error': 'products key not presented or not list'})
+    elif not preorder['products']:
+        return Response({'error': 'no products found'})
+
     order = Order.objects.create(
-        address=data.get('address'),
-        name = data.get('firstname'),
-        surname = data.get('lastname'),
-        phone_number = data.get('phonenumber'),
+        address=preorder.get('address'),
+        name = preorder.get('firstname'),
+        surname = preorder.get('lastname'),
+        phone_number = preorder.get('phonenumber'),
     )
 
-    for item in data.get('products'):
+    for item in preorder.get('products'):
         product_id = item.get('product')
         amount = item.get('quantity')
         product = Product.objects.get(pk=product_id)
 
-        order_details = OrderDetails.objects.create(
+        OrderDetails.objects.create(
             order=order,
             product = product,
             amount = amount,
         )
 
-    return JsonResponse({"status": "ok",})
+    return Response({'message': 'Order created'})

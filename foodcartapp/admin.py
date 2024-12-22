@@ -18,7 +18,7 @@ class RestaurantMenuItemInline(admin.TabularInline):
 
 class OrderDetailsInline(admin.TabularInline):
     model = OrderDetails
-    extra = 1
+    extra = 0
 
 
 @admin.register(Restaurant)
@@ -115,5 +115,5 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    fields = ['address', 'name', 'surname', 'phone_number']
+    fields = ['address', 'firstname', 'lastname', 'phonenumber']
     inlines = [OrderDetailsInline]

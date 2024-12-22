@@ -126,12 +126,12 @@ class RestaurantMenuItem(models.Model):
 
 class Order(models.Model):
     address = models.CharField('Адрес', max_length=150, db_index=True)
-    name = models.CharField('Имя', max_length=50, db_index=True)
-    surname = models.CharField('Фамилия', max_length=50, db_index=True)
-    phone_number = PhoneNumberField('Мобильный номер', db_index=True)
+    firstname = models.CharField('Имя', max_length=50, db_index=True)
+    lastname = models.CharField('Фамилия', max_length=50, db_index=True)
+    phonenumber = PhoneNumberField('Мобильный номер', db_index=True)
 
     def __str__(self):
-        return f'{self.name} {self.surname}, {self.address}'
+        return f'{self.firstname} {self.lastname}, {self.address}'
 
     class Meta:
         verbose_name = 'Заказ'
@@ -150,14 +150,14 @@ class OrderDetails(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Товар',
         related_name='products',)
-    amount = models.PositiveIntegerField(
+    quantity = models.PositiveIntegerField(
         'Количество',
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
 
     def __str__(self):
-        return f'{self.product} {self.order.name} {self.order.surname} {self.order.address}'
+        return f'{self.product} {self.order.firstname} {self.order.lastname} {self.order.address}'
 
     class Meta:
         verbose_name = 'Элементы заказа'

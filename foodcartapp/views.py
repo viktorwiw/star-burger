@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from phonenumber_field.phonenumber import PhoneNumber
 
 from .models import Product, Order, OrderDetails
 
@@ -63,19 +64,47 @@ def product_list_api(request):
     })
 
 
+def validate_field(data, field):
+    if field not in data:
+        return f"Ключ '{field}' отсутствует - это обязательное поле"
+    elif data.get(field) is None:
+        return f"Ключ '{field}' не может быть пустым(равен None)"
+    elif not data.get(field):
+        return f"Ключ '{field}' имеет пустое значение"
+
+
 @api_view(['POST'])
 def register_order(request):
-    try:
-        preorder = request.data
-    except ValueError:
-        return JsonResponse({'error': 'Invalid JSON'})
+    preorder = request.data
 
-    if 'products' not in preorder:
-        return Response({'error': 'no products found'})
-    elif isinstance(preorder.get('products'), str):
-        return Response({'error': 'products key not presented or not list'})
-    elif not preorder['products']:
-        return Response({'error': 'no products found'})
+    string_fields = ['firstname', 'lastname', 'address', 'phonenumber']
+    errors = {f'the key {field} value must not be a list' for field in string_fields if isinstance(preorder.get(field), list)}
+    if errors:
+        return Response({'error': errors}, status=400)
+
+    required_fields = [
+        'products',
+        'firstname',
+        'lastname',
+        'phonenumber',
+        'address'
+    ]
+    errors = {validate_field(preorder,field) for field in required_fields if validate_field(preorder, field)}
+    if errors:
+        return Response({'errors': errors}, status=400)
+
+    if not isinstance(preorder.get('products'), list):
+        return Response(
+            {'error': 'the key products value was expected list with values'},
+            status=400
+        )
+
+    phone = PhoneNumber.from_string(preorder.get('phonenumber'))
+    if not PhoneNumber.is_valid(phone):
+        return Response(
+            {'error': 'the key phonenumber is invalid'},
+            status=400
+        )
 
     order = Order.objects.create(
         address=preorder.get('address'),
@@ -85,14 +114,20 @@ def register_order(request):
     )
 
     for item in preorder.get('products'):
-        product_id = item.get('product')
         amount = item.get('quantity')
-        product = Product.objects.get(pk=product_id)
+
+        product_id = item.get('product')
+        try:
+            product = Product.objects.get(pk=product_id)
+        except Product.DoesNotExist:
+            return Response(
+                {'error': 'Product does not exist'},
+                status=400
+            )
 
         OrderDetails.objects.create(
             order=order,
             product = product,
             amount = amount,
         )
-
     return Response({'message': 'Order created'})

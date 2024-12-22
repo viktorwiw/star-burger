@@ -3,6 +3,7 @@ import logging
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
+from rest_framework.renderers import JSONRenderer
 from rest_framework.serializers import ValidationError
 from rest_framework.response import Response
 from rest_framework.serializers import ListField, ModelSerializer
@@ -72,11 +73,11 @@ class OrderDetailsSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OrderDetailsSerializer(many=True, allow_empty=False)
+    products = OrderDetailsSerializer(many=True, allow_empty=False, write_only=True)
 
     class Meta:
         model = Order
-        fields = ['products', 'firstname', 'lastname', 'phonenumber', 'address']
+        fields = ['id', 'products', 'firstname', 'lastname', 'phonenumber', 'address']
 
 
 @api_view(['POST'])
@@ -98,6 +99,5 @@ def register_order(request):
     ]
     OrderDetails.objects.bulk_create(products)
 
-    return Response({
-        'order_id': order.id,
-    })
+    serializer = OrderSerializer(order)
+    return Response(serializer.data)

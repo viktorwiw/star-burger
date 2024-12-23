@@ -1,13 +1,11 @@
 import logging
-import json
 
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
-from rest_framework.renderers import JSONRenderer
-from rest_framework.serializers import ValidationError
+
 from rest_framework.response import Response
-from rest_framework.serializers import ListField, ModelSerializer
+from rest_framework.serializers import ModelSerializer
 
 from .models import Product, Order, OrderDetails
 

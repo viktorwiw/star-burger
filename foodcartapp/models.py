@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F, Sum
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -124,11 +125,24 @@ class RestaurantMenuItem(models.Model):
         return f"{self.restaurant.name} - {self.product.name}"
 
 
+class OrderQuerySet(models.QuerySet):
+    def total_price(self):
+        return self.annotate(
+            total_price=Sum(F('details__quantity') * F('details__product__price'))
+        ).order_by('id')
+
+
 class Order(models.Model):
     address = models.CharField('Адрес', max_length=150, db_index=True)
     firstname = models.CharField('Имя', max_length=50, db_index=True)
     lastname = models.CharField('Фамилия', max_length=50, db_index=True)
     phonenumber = PhoneNumberField('Мобильный номер', db_index=True)
+
+    objects = OrderQuerySet.as_manager()
+
+    @property
+    def full_name(self):
+        return f"{self.firstname} {self.lastname}"
 
     def __str__(self):
         return f'{self.firstname} {self.lastname}, {self.address}'
@@ -136,6 +150,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+        ordering = ['id']
 
 
 class OrderDetails(models.Model):

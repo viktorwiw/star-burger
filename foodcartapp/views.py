@@ -1,5 +1,6 @@
 import logging
 
+from django.db import transaction
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
@@ -79,6 +80,7 @@ class OrderSerializer(ModelSerializer):
         fields = ['id', 'products', 'firstname', 'lastname', 'phonenumber', 'address']
 
 
+@transaction.atomic
 @api_view(['POST'])
 def register_order(request):
     serializer = OrderSerializer(data=request.data)
@@ -90,7 +92,6 @@ def register_order(request):
         lastname=serializer.validated_data['lastname'],
         phonenumber=serializer.validated_data['phonenumber'],
     )
-
     products_fields = serializer.validated_data['products']
     products = [
         OrderDetails(
@@ -98,6 +99,7 @@ def register_order(request):
             product=fields['product'],
             quantity=fields['quantity'],
             price=fields['product'].price,
+            **fields
         )
         for fields in products_fields
     ]

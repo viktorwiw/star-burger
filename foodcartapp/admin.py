@@ -110,7 +110,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 class OrderDetailsInline(admin.TabularInline):
     model = OrderDetails
-    extra = 1
+    extra = 0
 
 
 @admin.register(Order)

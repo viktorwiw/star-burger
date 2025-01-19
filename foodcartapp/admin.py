@@ -16,11 +16,6 @@ class RestaurantMenuItemInline(admin.TabularInline):
     extra = 0
 
 
-class OrderDetailsInline(admin.TabularInline):
-    model = OrderDetails
-    extra = 0
-
-
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
     search_fields = [
@@ -113,7 +108,24 @@ class ProductAdmin(admin.ModelAdmin):
     pass
 
 
+class OrderDetailsInline(admin.TabularInline):
+    model = OrderDetails
+    extra = 1
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     fields = ['address', 'firstname', 'lastname', 'phonenumber']
     inlines = [OrderDetailsInline]
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+
+        for obj in formset.deleted_objects:
+            obj.delete()
+
+        for instance in instances:
+            instance.price = instance.product.price
+            instance.save()
+
+        formset.save_m2m()

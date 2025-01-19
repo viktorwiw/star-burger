@@ -81,7 +81,7 @@ class Product(models.Model):
     )
     description = models.TextField(
         'описание',
-        max_length=200,
+        max_length=250,
         blank=True,
     )
 
@@ -128,7 +128,7 @@ class RestaurantMenuItem(models.Model):
 class OrderQuerySet(models.QuerySet):
     def total_price(self):
         return self.annotate(
-            total_price=Sum(F('details__quantity') * F('details__product__price'))
+            total_price=Sum(F('details__quantity') * F('details__price'))
         ).order_by('id')
 
 
@@ -145,7 +145,7 @@ class Order(models.Model):
         return f"{self.firstname} {self.lastname}"
 
     def __str__(self):
-        return f'{self.firstname} {self.lastname}, {self.address}'
+        return f'Заказ № {self.id} - {self.firstname} {self.lastname}, {self.address}'
 
     class Meta:
         verbose_name = 'Заказ'
@@ -169,6 +169,13 @@ class OrderDetails(models.Model):
         'Количество',
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
+    price = models.DecimalField(
+        'Цена продукта',
+        max_digits=8,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(0)]
     )
 
     def __str__(self):

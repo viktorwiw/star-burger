@@ -148,6 +148,17 @@ class Order(models.Model):
         default='raw',
         db_index=True,
     )
+    PAYMENT_STATUS_CHOICES = (
+        ('cash', 'Наличностью'),
+        ('electronic', 'Электронно'),
+    )
+    payment_method = models.CharField(
+        'Способ оплаты',
+        max_length=20,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='cash',
+        db_index=True
+    )
     address = models.CharField('Адрес', max_length=150, db_index=True)
     firstname = models.CharField('Имя', max_length=50, db_index=True)
     lastname = models.CharField('Фамилия', max_length=50, db_index=True)

@@ -132,7 +132,21 @@ class OrderQuerySet(models.QuerySet):
         ).order_by('id')
 
 
+
 class Order(models.Model):
+    PROCESSING_STATUS_CHOICES = (
+        ('raw', 'Необработанный'),
+        ('assembled', 'Cборка'),
+        ('delivery', 'Доставка'),
+        ('ready', 'Готов'),
+    )
+    status = models.CharField(
+        'Статус',
+        max_length=20,
+        choices=PROCESSING_STATUS_CHOICES,
+        default='raw',
+        db_index=True,
+    )
     address = models.CharField('Адрес', max_length=150, db_index=True)
     firstname = models.CharField('Имя', max_length=50, db_index=True)
     lastname = models.CharField('Фамилия', max_length=50, db_index=True)

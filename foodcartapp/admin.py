@@ -115,7 +115,17 @@ class OrderDetailsInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    fields = ['address', 'status', 'firstname', 'lastname', 'phonenumber', 'comment']
+    fields = [
+        'address',
+        'status',
+        'firstname',
+        'lastname',
+        'phonenumber',
+        'comment',
+        'registrated_at',
+        'called_at',
+        'delivered_at'
+    ]
     inlines = [OrderDetailsInline]
 
 

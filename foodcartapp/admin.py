@@ -105,8 +105,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductCategory)
-class ProductAdmin(admin.ModelAdmin):
-    pass
+class ProductAdmin(admin.ModelAdmin):    pass
 
 
 class OrderDetailsInline(admin.TabularInline):
@@ -116,7 +115,7 @@ class OrderDetailsInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    fields = ['address', 'status', 'firstname', 'lastname', 'phonenumber']
+    fields = ['address', 'status', 'firstname', 'lastname', 'phonenumber', 'comment']
     inlines = [OrderDetailsInline]
 
 

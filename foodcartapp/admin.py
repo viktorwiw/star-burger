@@ -123,6 +123,7 @@ class OrderAdmin(admin.ModelAdmin):
         'lastname',
         'phonenumber',
         'comment',
+        'restaurant',
         'registrated_at',
         'called_at',
         'delivered_at'
@@ -153,3 +154,10 @@ class OrderAdmin(admin.ModelAdmin):
             return redirect(next_url)
 
         return super(OrderAdmin, self).response_change(request, obj)
+
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            if not form.initial.get('restaurant') and obj.restaurant:
+                obj.status = 'assembled'
+        super().save_model(request, obj, form, change)

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
-from foodcartapp.models import Product, Restaurant, Order, OrderDetails
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 
 
 logger = logging.getLogger(__name__)
@@ -95,6 +95,33 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    return render(request, template_name='order_items.html', context={
-        'order_items': Order.objects.total_price().exclude(status='ready')}
-    )
+    orders = Order.objects.total_price().exclude(status='ready').prefetch_related('details__product').order_by('-status')
+
+    restaurant_items = RestaurantMenuItem.objects.select_related('restaurant', 'product').filter(availability=True)
+
+    order_items = []
+    for order in orders:
+        products = order.details.all()
+
+        if not products:
+            available_restaurants = []
+        else:
+            available_restaurants = [
+                item.restaurant for item in restaurant_items if item.product == products[0].product
+            ]
+
+            for detail in products[1:]:
+                product_restaurants = [
+                    item.restaurant for item in restaurant_items if item.product == detail.product
+                ]
+
+                available_restaurants = [restaurant for restaurant in available_restaurants if restaurant in product_restaurants]
+
+        order_items.append({
+            'order': order,
+            'restaurants': available_restaurants,
+        })
+
+    return render(request, 'order_items.html', {
+        'order_items': order_items,
+    })

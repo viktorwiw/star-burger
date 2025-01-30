@@ -165,3 +165,5 @@ LOGGING = {
         },
     }
 }
+
+GEO_API_KEY = env.str('GEO_API_KEY')

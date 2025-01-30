@@ -35,20 +35,24 @@
         <td>{{ item.order.phonenumber }}</td>
         <td>{{ item.order.address }}</td>
         {% if item.order.restaurant %}
-        <td>Готовит {{ item.order.restaurant }}</td>>
+          <td>Готовит {{ item.order.restaurant }}</td>
         {% else %}
-        <td>
-        <details>
-            <summary>Может быть приготовлен ресторанами</summary>
-            <ul>
-                {% for restaurant in item.restaurants %}
-                    <li>{{ restaurant.name }}</li>
-                {% endfor %}
-            </ul>
-        </details>
-        </td>
+          <td>
+            {% if item.restaurants %}
+              <details>
+                <summary>Может быть приготовлен ресторанами</summary>
+                <ul>
+                  {% for restaurant in item.restaurants %}
+                    <li>{{ restaurant.restaurant_name }} - {{ restaurant.distance }} км</li>
+                  {% endfor %}
+                </ul>
+              </details>
+            {% else %}
+              Ошибка определения координат
+            {% endif %}
+          </td>
         {% endif %}
-        <td>{{ item.order.comment}}</td>>
+        <td>{{ item.order.comment}}</td>
         <td><a href="{% url 'admin:foodcartapp_order_change' item.order.id %}?next={{ request.path|urlencode }}">Редактировать</a></td>
       </tr>
     {% endfor %}

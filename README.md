@@ -37,7 +37,7 @@ python --version
 ```
 **Важно!** Версия Python должна быть не ниже 3.6.
 
-Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии. 
+Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
 
 В каталоге проекта создайте виртуальное окружение:
 ```sh
@@ -54,10 +54,12 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Определите переменную окружения `SECRET_KEY`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
+Определите переменную окружения `SECRET_KEY`, `GEO_API_KEY`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
 ```sh
 SECRET_KEY=django-insecure-0if40nf4nf93n4
+GEO_API_KEY=ВАШ YANDEX_API_KEY
 ```
+`GEO_API_KEY` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
@@ -147,6 +149,7 @@ Parcel будет следить за файлами в каталоге `bundle
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `GEO_API_KEY` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 
 ## Цели проекта
 

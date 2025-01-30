@@ -99,7 +99,6 @@ def register_order(request):
             product=fields['product'],
             quantity=fields['quantity'],
             price=fields['product'].price,
-            **fields
         )
         for fields in products_fields
     ]

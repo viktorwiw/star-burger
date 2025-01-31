@@ -14,6 +14,7 @@ from geopy import distance
 import requests
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem, OrderDetails
+from locations.models import AddressCache
 
 
 logger = logging.getLogger(__name__)
@@ -124,9 +125,8 @@ def view_orders(request):
 
             available_restaurants = set.intersection(*restaurants_for_products)
 
-        client_address = order.address
-        order_coords = fetch_coordinates(geo_apikey, client_address)
-
+        order_coords = fetch_coordinates(geo_apikey, order.address)
+        logger.info(f"Order coords: {order_coords}")
         restaurant_with_distance = []
         for restaurant in available_restaurants:
             restaurant_coords = fetch_coordinates(geo_apikey, restaurant.address)
@@ -148,6 +148,23 @@ def view_orders(request):
 
 
 def fetch_coordinates(geo_apikey, address):
+    if not address:  # Если адрес None или пустая строка
+        return (None, None)
+
+    try:
+        cached = AddressCache.objects.get(address=address)
+        return (cached.lon, cached.lat)
+    except AddressCache.DoesNotExist:
+        result = get_coordinates_from_api(geo_apikey, address)
+        if result is None:  # API не нашло координаты
+            return (None, None)
+
+        lon, lat = result
+        AddressCache.objects.create(address=address, lat=lat, lon=lon)
+        return (lon, lat)
+
+
+def get_coordinates_from_api(geo_apikey, address):
     try:
         base_url = "https://geocode-maps.yandex.ru/1.x"
         response = requests.get(base_url, params={

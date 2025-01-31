@@ -10,6 +10,7 @@ from .models import Restaurant
 from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderDetails
+from locations.models import AddressCache
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -161,3 +162,8 @@ class OrderAdmin(admin.ModelAdmin):
             if not form.initial.get('restaurant') and obj.restaurant:
                 obj.status = 'assembled'
         super().save_model(request, obj, form, change)
+
+
+@admin.register(AddressCache)
+class AddressCacheAdmin(admin.ModelAdmin):
+    pass

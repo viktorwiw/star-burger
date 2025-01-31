@@ -148,20 +148,31 @@ def view_orders(request):
 
 
 def fetch_coordinates(geo_apikey, address):
-    if not address:  # Если адрес None или пустая строка
-        return (None, None)
+    if not address:
+        return None
 
     try:
         cached = AddressCache.objects.get(address=address)
-        return (cached.lon, cached.lat)
+        if cached.lat is None or cached.lon is None:
+            return None
+        return (float(cached.lon), float(cached.lat))
     except AddressCache.DoesNotExist:
-        result = get_coordinates_from_api(geo_apikey, address)
-        if result is None:  # API не нашло координаты
-            return (None, None)
+        pass
 
-        lon, lat = result
-        AddressCache.objects.create(address=address, lat=lat, lon=lon)
-        return (lon, lat)
+    result = get_coordinates_from_api(geo_apikey, address)
+    if not result:
+        AddressCache.objects.create(address=address, lat=None, lon=None)
+        return None
+
+    lon, lat = result
+    try:
+        lon_float = float(lon)
+        lat_float = float(lat)
+    except (TypeError, ValueError):
+        return None
+
+    AddressCache.objects.create(address=address, lat=lat_float, lon=lon_float)
+    return (lon_float, lat_float)
 
 
 def get_coordinates_from_api(geo_apikey, address):

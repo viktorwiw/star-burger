@@ -4,11 +4,10 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
-
 from rest_framework.response import Response
-from rest_framework.serializers import ModelSerializer
 
 from .models import Product, Order, OrderDetails
+from foodcartapp.serializers import OrderSerializer
 
 
 logger = logging.getLogger(__name__)
@@ -64,20 +63,6 @@ def product_list_api(request):
         'ensure_ascii': False,
         'indent': 4,
     })
-
-
-class OrderDetailsSerializer(ModelSerializer):
-    class Meta:
-        model = OrderDetails
-        fields = ['product', 'quantity']
-
-
-class OrderSerializer(ModelSerializer):
-    products = OrderDetailsSerializer(many=True, allow_empty=False, write_only=True)
-
-    class Meta:
-        model = Order
-        fields = ['id', 'products', 'firstname', 'lastname', 'phonenumber', 'address']
 
 
 @transaction.atomic

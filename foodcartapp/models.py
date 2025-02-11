@@ -164,7 +164,7 @@ class Order(models.Model):
     lastname = models.CharField('Фамилия', max_length=50, db_index=True)
     phonenumber = PhoneNumberField('Мобильный номер', db_index=True)
     comment = models.TextField('Комментарий', blank=True)
-    registrated_at = models.DateTimeField(
+    registered_at = models.DateTimeField(
         'Время регистрации',
         default=timezone.now,
         db_index=True

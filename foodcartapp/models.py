@@ -218,7 +218,8 @@ class OrderDetails(models.Model):
         'Цена продукта',
         max_digits=8,
         decimal_places=2,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
     )
 
     def __str__(self):

@@ -141,7 +141,6 @@ def view_orders(request):
             'order': order,
             'restaurants': sorted_restaurants,
         })
-        logger.info(f'Ордер {order_items}')
     return render(request, 'order_items.html', {
         'order_items': order_items,
     })

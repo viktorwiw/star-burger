@@ -26,7 +26,9 @@ class OrderSerializer(ModelSerializer):
         order_details = [
             OrderDetails(
                 order=order,
-                **fields
+                product=fields['product'],
+                quantity=fields['quantity'],
+                price=fields['product'].price,
             )
         for fields in products_fields
         ]

@@ -125,7 +125,7 @@ class OrderAdmin(admin.ModelAdmin):
         'phonenumber',
         'comment',
         'restaurant',
-        'registrated_at',
+        'registered_at',
         'called_at',
         'delivered_at'
     ]

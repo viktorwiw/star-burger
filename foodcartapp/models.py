@@ -219,8 +219,7 @@ class OrderDetails(models.Model):
         max_digits=8,
         decimal_places=2,
         validators=[MinValueValidator(0)],
-        null=True,
-    )
+       )
 
     def __str__(self):
         return f'{self.product} {self.order.firstname} {self.order.lastname} {self.order.address}'

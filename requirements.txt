@@ -7,3 +7,4 @@ phonenumberslite==8.13.51
 djangorestframework==3.13.1
 requests==2.32.3
 geopy==2.4.1
+rollbar==1.2.0

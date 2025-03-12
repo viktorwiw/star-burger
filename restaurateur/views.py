@@ -126,7 +126,7 @@ def view_orders(request):
             available_restaurants = set.intersection(*restaurants_for_products)
 
         order_coords = fetch_coordinates(geo_apikey, order.address)
-        logger.info(f"Order coords: {order_coords}")
+
         restaurant_with_distance = []
         for restaurant in available_restaurants:
             restaurant_coords = fetch_coordinates(geo_apikey, restaurant.address)

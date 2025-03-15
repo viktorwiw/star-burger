@@ -15,9 +15,39 @@
 
 Для логирования в проекте использован сервис [Rollbar](https://rollbar.com/).
 
+
 ## Как запустить dev-версию сайта
 
 Для запуска сайта нужно запустить **одновременно** бэкенд и фронтенд, в двух терминалах.
+
+### Установка СУБД Postgres и создание БД
+
+Установите Postgress
+
+```
+sudo apt-get update
+sudo apt-get install libpq-dev postgresql postgresql-contrib
+```
+
+Создайте БД
+
+```
+sudo passwd postgres
+sudo su - postgres
+psql
+CREATE DATABASE star-burger;
+CREATE USER myprojectuser WITH PASSWORD 'password';
+ALTER ROLE myprojectuser WITH LOGIN;
+GRANT ALL PRIVILEGES ON DATABASE "star-burger" TO myprojectuser;
+ALTER USER myprojectuser CREATEDB;
+\c star-burger
+GRANT ALL ON schema public TO myprojectuser;
+\q
+exit
+```
+
+``myprojectuser`` - имя вашего пользователя для БД
+
 
 ### Как собрать бэкенд
 
@@ -37,7 +67,7 @@ cd star-burger
 ```sh
 python --version
 ```
-**Важно!** Версия Python должна быть не ниже 3.6.
+**Важно!** Версия Python должна быть 3.9.
 
 Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
 
@@ -61,11 +91,24 @@ pip install -r requirements.txt
 SECRET_KEY=django-key-random
 GEO_API_KEY=ВАШ YANDEX_API_KEY
 ROLLBAR_TOKEN=ТОКЕН ROLLBAR
+DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
+
 ```
+где:
+
 ``GEO_API_KEY`` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 
 ``ROLLBAR_TOKEN`` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
 
+в ``DB_URL``
+
+```
+NAME - имя БД,
+USER - логин,
+PASSWORD - пароль юзера,
+НOST - localhost,
+PORT - порт по умолчанию - 5432,
+```
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
@@ -81,7 +124,8 @@ python manage.py runserver
 
 Откройте сайт в браузере по адресу [http://127.0.0.1:8000/](http://127.0.0.1:8000/). Если вы увидели пустую белую страницу, то не пугайтесь, выдохните. Просто фронтенд пока ещё не собран. Переходите к следующему разделу README.
 
-### Собрать фронтенд
+
+### Как собрать фронтенд
 
 **Откройте новый терминал**. Для работы сайта в dev-режиме необходима одновременная работа сразу двух программ `runserver` и `parcel`. Каждая требует себе отдельного терминала. Чтобы не выключать `runserver` откройте для фронтенда новый терминал и все нижеследующие инструкции выполняйте там.
 
@@ -158,6 +202,8 @@ Parcel будет следить за файлами в каталоге `bundle
 - `GEO_API_KEY` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 - `ROLLBAR_TOKEN` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
 - `ROLLBAR_ENVIRONMENT=production`
+- `DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
+
 
 ## Цели проекта
 

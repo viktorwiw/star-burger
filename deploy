@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+source .env
+
+echo "ROLLBAR_TOKEN: $ROLLBAR_TOKEN"
+echo "ROLLBAR_ENVIRONMENT: $ROLLBAR_ENVIRONMENT"
 
 cd /opt/star-burger
 
@@ -23,3 +27,8 @@ systemctl restart star-burger.service
 systemctl reload nginx.service
 
 echo "!!!Deployment complete!!!"
+
+
+commit = $(git rev-parse HEAD)
+
+curl -H "X-Rollbar-Access-Token: $ROLLBAR_TOKEN" -H "Content-Type: application/json" -X POST 'https://api.rollbar.com/api/1/deploy' -d '{"environment": "$ROLLBAR_ENVIRONMENT", "revision": "$commit", "status": "succeeded"}'

@@ -204,6 +204,20 @@ Parcel будет следить за файлами в каталоге `bundle
 - `ROLLBAR_ENVIRONMENT=production`
 - `DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
 
+### Скрипт для деплоя - внесение изменений на сервере
+
+Перейдите в корень проекта
+
+```
+cd /opt/star-burger
+```
+
+Выполните команду
+
+```
+./deploy
+```
+
 
 ## Цели проекта
 

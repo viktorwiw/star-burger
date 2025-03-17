@@ -216,6 +216,7 @@ class OrderDetails(models.Model):
     )
     price = models.DecimalField(
         'Цена продукта',
+        default=0,
         max_digits=8,
         decimal_places=2,
         validators=[MinValueValidator(0)],

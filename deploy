@@ -22,4 +22,4 @@ systemctl restart star-burger.service
 
 systemctl reload nginx.service
 
-echo "Деплой окончен"
+echo "!!!Deployment complete!!!"

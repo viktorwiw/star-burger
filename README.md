@@ -90,14 +90,11 @@ pip install -r requirements.txt
 ```sh
 SECRET_KEY=django-key-random
 GEO_API_KEY=ВАШ YANDEX_API_KEY
-ROLLBAR_TOKEN=ТОКЕН ROLLBAR
 DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
-
 ```
-где:
-
 ``GEO_API_KEY`` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 
+Если необходим Rollbar, добавьте в `.env` - ``ROLLBAR_TOKEN`` 
 ``ROLLBAR_TOKEN`` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
 
 в ``DB_URL``
@@ -110,7 +107,7 @@ PASSWORD - пароль юзера,
 PORT - порт по умолчанию - 5432,
 ```
 
-Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
+Отмигрируйте  БД следующей командой:
 
 ```sh
 python manage.py migrate
@@ -196,13 +193,16 @@ Parcel будет следить за файлами в каталоге `bundle
 
 Настроить бэкенд: создать файл `.env` в каталоге `star_burger/` со следующими настройками:
 
-- `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `GEO_API_KEY` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
+- `DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
+
+Если необходим Rollbar:
+
 - `ROLLBAR_TOKEN` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
 - `ROLLBAR_ENVIRONMENT=production`
-- `DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
+
 
 ### Скрипт для деплоя - внесение изменений на сервере
 

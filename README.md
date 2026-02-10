@@ -35,12 +35,12 @@ sudo apt-get install libpq-dev postgresql postgresql-contrib
 sudo passwd postgres
 sudo su - postgres
 psql
-CREATE DATABASE star-burger;
+CREATE DATABASE star_burger;
 CREATE USER myprojectuser WITH PASSWORD 'password';
 ALTER ROLE myprojectuser WITH LOGIN;
-GRANT ALL PRIVILEGES ON DATABASE "star-burger" TO myprojectuser;
+GRANT ALL PRIVILEGES ON DATABASE "star_burger" TO myprojectuser;
 ALTER USER myprojectuser CREATEDB;
-\c star-burger
+\c star_burger
 GRANT ALL ON schema public TO myprojectuser;
 \q
 exit
@@ -67,7 +67,7 @@ cd star-burger
 ```sh
 python --version
 ```
-**Важно!** Версия Python должна быть 3.9.
+**Важно!** Версия Python должна быть 3.10.
 
 Возможно, вместо команды `python` здесь и в остальных инструкциях этого README придётся использовать `python3`. Зависит это от операционной системы и от того, установлен ли у вас Python старой второй версии.
 
@@ -94,7 +94,7 @@ DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 ```
 ``GEO_API_KEY`` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 
-Если необходим Rollbar, добавьте в `.env` - ``ROLLBAR_TOKEN`` 
+Если необходим Rollbar, добавьте в `.env` - ``ROLLBAR_TOKEN``
 ``ROLLBAR_TOKEN`` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
 
 в ``DB_URL``
@@ -141,7 +141,7 @@ npm --version
 # 8.11.0
 ```
 
-Версия `nodejs` должна быть не младше `10.0` и не старше `16.16`. Лучше ставьте `16.16.0`, её мы тестировали. Версия `npm` не важна. Как обновить Node.js читайте в статье: [How to Update Node.js](https://phoenixnap.com/kb/update-node-js-version).
+Версия `nodejs` должна быть не младше `10.0` и не старше `16.*`. Лучше ставьте `16.16.0`, её мы тестировали. Версия `npm` не важна. Как обновить Node.js читайте в статье: [How to Update Node.js](https://phoenixnap.com/kb/update-node-js-version).
 
 Перейдите в каталог проекта и установите пакеты Node.js:
 
@@ -194,7 +194,7 @@ Parcel будет следить за файлами в каталоге `bundle
 Настроить бэкенд: создать файл `.env` в каталоге `star_burger/` со следующими настройками:
 
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
+- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/5.2/ref/settings/#allowed-hosts)
 - `GEO_API_KEY` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
 - `DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
 

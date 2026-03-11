@@ -1,0 +1,19 @@
+__pycache__/
+
+.env.prod
+env/
+
+*.log
+
+node_modules/
+
+.git/
+.gitignore
+
+.idea/
+.vscode/
+
+media/
+
+staticfiles/
+docker images | grep starburger-backend

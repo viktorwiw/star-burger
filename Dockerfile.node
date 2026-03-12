@@ -12,3 +12,5 @@ RUN apt-get update \
 COPY package.json package-lock.json ./
 
 RUN npm ci --include=dev
+
+COPY bundles-src ./bundles-src

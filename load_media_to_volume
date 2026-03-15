@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+SOURCE_DIR="/tmp/star-burg-media"
+MEDIA_VOLUME="star-burg_media"
+
+echo "===> Copy media files to Docker volume"
+
+docker run --rm \
+  -v ${MEDIA_VOLUME}:/data \
+  -v ${SOURCE_DIR}:/source \
+  alpine sh -c "cp -r /source/* /data/"
+
+echo "===> Media files loaded into volume successfully"
+
+echo "===> Remove temporary source directory"
+rm -rf "$SOURCE_DIR"
+
+echo "===> Done"

@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+source .env
+export ROLLBAR_TOKEN
+export ROLLBAR_ENVIRONMENT
+
+PROJECT_DIR="/opt/star-burger"
+
+echo "===> Start deployment"
+
+cd "$PROJECT_DIR"
+
+git pull origin main
+
+docker compose up -d --build
+
+echo "===> Deployment completed successfully"
+
+
+

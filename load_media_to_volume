@@ -2,15 +2,18 @@
 
 set -e
 
-SOURCE_DIR="/tmp/star-burg-media"
-MEDIA_VOLUME="star-burg_media"
+SOURCE_DIR="/opt/star-burger/media"
+MEDIA_VOLUME="star-burger_media"
 
 echo "===> Copy media files to Docker volume"
-
+docker pull alpine
 docker run --rm \
   -v ${MEDIA_VOLUME}:/data \
   -v ${SOURCE_DIR}:/source \
-  alpine sh -c "cp -r /source/* /data/"
+  alpine sh -c "
+        cp -r /source/* /data/ &&
+        chmod -R a+rX /data
+  "
 
 echo "===> Media files loaded into volume successfully"
 

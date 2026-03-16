@@ -55,21 +55,32 @@ services:
     image: nginx:1.27-alpine
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - django
     volumes:
       - staticfiles:/static
       - media:/media
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
     restart: unless-stopped
     networks:
       - app_network
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
 
 volumes:
   postgres_data:
   bundles:
   staticfiles:
   media:
+  certbot_certs:
+  certbot_www:
 
 networks:
   app_network:

@@ -15,6 +15,8 @@
 
 Для логирования в проекте использован сервис [Rollbar](https://rollbar.com/).
 
+Проект полностью контейнеризированный (Django + PostgreSQL + Nginx + Node/Parcel) с поддержкой HTTPS (Let's Encrypt) и автообновлением сертификатов.
+
 
 ## Как запустить dev-версию сайта без Docker
 
@@ -87,7 +89,7 @@ pip install -r requirements.txt
 ```
 
 Определите переменные окружения. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
-```sh
+```bash
 SECRET_KEY=django-key-random
 GEO_API_KEY=ВАШ YANDEX_API_KEY
 DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
@@ -147,7 +149,7 @@ npm --version
 
 ```sh
 cd star-burger
-npm ci --dev
+npm ci --include=dev
 ```
 
 Команда `npm ci` создаст каталог `node_modules` и установит туда пакеты Node.js. Получится аналог виртуального окружения как для Python, но для Node.js.
@@ -200,6 +202,8 @@ Parcel будет следить за файлами в каталоге `bundle
 docker --version
 docker compose version
 ```
+[Установите Docker и Docker Compose](https://docs.docker.com/manuals/), если не установлен.
+
 
 ### Подготовка `.env`
 
@@ -208,11 +212,24 @@ docker compose version
 ```sh
 SECRET_KEY=django-key-random
 GEO_API_KEY=ВАШ_YANDEX_API_KEY
-
+DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 POSTGRES_DB=star_burger
 POSTGRES_USER=star_burger_user
 POSTGRES_PASSWORD=star_burger_password
 ```
+в ``DB_URL``
+
+```
+NAME - имя БД,
+USER - логин,
+PASSWORD - пароль юзера,
+НOST - localhost,
+PORT - порт по умолчанию - 5432,
+```
+
+Если необходим Rollbar, добавьте в `.env` - ``ROLLBAR_TOKEN``
+
+``ROLLBAR_TOKEN`` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
 
 `GEO_API_KEY` — ключ API Яндекс Карт.
 
@@ -264,40 +281,180 @@ docker compose -f docker-compose.local.yml down -v
 А также код можно редактировать и он сразу будет подхватываться
 
 
-## Как запустить prod-версию сайта
+## Деплой на сервер
 
-Собрать фронтенд:
+### Установка Docker
 
-```sh
-./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
+```bash
+sudo apt update
+sudo apt install docker.io docker-compose-v2 -y
+sudo usermod -aG docker $USER
 ```
 
-Настроить бэкенд: создать файл `.env` в каталоге `star_burger/` со следующими настройками:
+Перелогиньтесь.
 
-- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/5.2/ref/settings/#allowed-hosts)
-- `GEO_API_KEY` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
-- `DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
+Проверка:
 
-Если необходим Rollbar:
-
-- `ROLLBAR_TOKEN` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
-- `ROLLBAR_ENVIRONMENT=production`
-
-
-### Скрипт для деплоя - внесение изменений на сервере
-
-Перейдите в корень проекта
-
-```
-cd /opt/star-burger
+```bash
+docker --version
+docker compose version
 ```
 
-Выполните команду
+---
+
+### Клонирование проекта
+
+```bash
+cd /opt
+sudo git clone <REPO_URL> star-burger
+cd star-burger
+```
+
+---
+
+### Настройка .env
+
+Создайте файл `.env`:
+
+```env
+SECRET_KEY=your-secret-key
+GEO_API_KEY=ВАШ_YANDEX_API_KEY
+DB_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
+POSTGRES_DB=star_burger_db
+POSTGRES_USER=star_burger_user
+POSTGRES_PASSWORD=your-password
+ALLOWED_HOSTS=you_domain
+CSRF_TRUSTED_ORIGINS=https://you_domen,http://you_domain
+```
+
+``GEO_API_KEY`` - [см. документацию API Яндекс Карт](https://yandex.ru/dev/commercial/doc/ru/concepts/jsapi-geocoder#how-to-use)
+
+Если необходим Rollbar, добавьте в `.env` - ``ROLLBAR_TOKEN``
+``ROLLBAR_TOKEN`` - [см. документацию к сервису Rollbar](https://docs.rollbar.com/docs/access-tokens)
+
+в ``DB_URL``
 
 ```
-./deploy
+NAME - имя БД,
+USER - логин,
+PASSWORD - пароль юзера,
+НOST - localhost,
+PORT - порт по умолчанию - 5432,
 ```
+---
+
+### Настройка nginx
+
+В папке `nginx/` есть два конфига:
+
+* `http.conf` — для первого запуска
+* `https.conf` — после SSL
+
+Замените заглушки:
+
+```
+YOUR_DOMAIN
+```
+
+Первый запуск:
+
+```bash
+cp nginx/http.conf nginx/default.conf
+```
+
+---
+
+### Запуск проекта
+
+```bash
+docker compose up -d --build
+```
+
+---
+
+### Выпуск SSL сертификата
+
+```bash
+docker compose run --rm certbot certonly \
+  --webroot \
+  --webroot-path=/var/www/certbot \
+  -d YOUR_DOMAIN \
+  --email YOUR_EMAIL \
+  --agree-tos \
+  --no-eff-email
+```
+
+Переключение на HTTPS:
+
+```bash
+cp nginx/https.conf nginx/default.conf
+docker compose restart nginx
+```
+
+---
+
+### Автообновление сертификатов
+
+```bash
+crontab -e
+```
+
+Добавить:
+
+```cron
+0 3 * * * cd /opt/star-burger && docker compose run --rm certbot renew && docker compose exec nginx nginx -s reload
+```
+
+Проверка:
+
+```bash
+docker compose run --rm certbot renew --dry-run
+```
+
+---
+
+### Деплой обновлений
+
+```bash
+bash deploy/deploy.sh
+```
+
+---
+
+### Загрузка media
+
+Для создания карточек товаров необходимы файлы медиа.
+
+Скопировать с локальной машины:
+
+```bash
+rsync -avz ./media/ root@SERVER_IP:/opt/star-burger/media/
+```
+
+Загрузить в volume:
+
+```bash
+bash deploy/load_media_to_volume.sh
+```
+
+---
+## Доступ в панель менеджера
+
+Перед первоначальной работой проекта, наполнения сайта товарами, необходимо зарегестрировать админа, и через админку - https://you_domain/admin добавить менеджера.
+
+```bash
+docker compose exec django python manage.py createsuperuser
+```
+Панель менеджера находится по адресу - https://you_domain/manager
+
+---
+
+## Важно
+
+* media и БД не хранятся в репозитории
+* данные сохраняются в Docker volumes
+* проект полностью восстанавливается после перезапуска
+---
 
 
 ## Цели проекта

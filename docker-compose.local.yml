@@ -20,15 +20,15 @@ services:
   node:
     build:
       context: .
-      dockerfile: Dockerfile.node
-    working_dir: /app
+      dockerfile: frontend/Dockerfile
+    working_dir: /app/frontend
     volumes:
       - .:/app
-      - node_modules:/app/node_modules
+      - node_modules:/app/frontend/node_modules
       - bundles:/app/bundles
-    command: sh -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url='./'"
+    command: sh -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir ../bundles --public-url='./'"
     healthcheck:
-      test: ["CMD-SHELL", "test -f /app/bundles/index.js && test -f /app/bundles/index.css"]
+      test: ["CMD-SHELL", "test -f /app/frontend/bundles/index.js && test -f /app/frontend/bundles/index.css"]
       interval: 5s
       timeout: 5s
       retries: 20

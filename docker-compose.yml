@@ -21,11 +21,11 @@ services:
   node:
     build:
       context: .
-      dockerfile: Dockerfile.node
-    working_dir: /app
+      dockerfile: frontend/Dockerfile
+    working_dir: /app/frontend
     volumes:
       - bundles:/app/bundles
-    command: sh -c "./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url='./'"
+    command: sh -c "./node_modules/.bin/parcel build bundles-src/index.js --dist-dir ../bundles --public-url='./'"
     networks:
       - app_network
 

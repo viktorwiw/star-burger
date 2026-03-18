@@ -3,14 +3,15 @@ FROM node:17-bullseye
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /app/frontend
 
 RUN apt-get update \
     && apt-get install -y python3 make g++ \
     && rm -rf /var/lib/apt/lists/*
 
-COPY package.json package-lock.json ./
+COPY frontend/package.json frontend/package-lock.json ./
 
 RUN npm ci --include=dev
 
-COPY bundles-src ./bundles-src
+COPY frontend/bundles-src ./bundles-src
+

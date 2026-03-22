@@ -21,14 +21,14 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    working_dir: /app/frontend
+    working_dir: /app
     volumes:
-      - .:/app
-      - node_modules:/app/frontend/node_modules
+      - ./frontend:/app
+      - node_modules:/app/node_modules
       - bundles:/app/bundles
-    command: sh -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir ../bundles --public-url='./'"
+    command: sh -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url='./'"
     healthcheck:
-      test: ["CMD-SHELL", "test -f /app/frontend/bundles/index.js && test -f /app/frontend/bundles/index.css"]
+      test: ["CMD-SHELL", "test -f /app/bundles/index.js && test -f /app/bundles/index.css"]
       interval: 5s
       timeout: 5s
       retries: 20

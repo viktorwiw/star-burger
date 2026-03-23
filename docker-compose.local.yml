@@ -38,7 +38,8 @@ services:
   django:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: backend/Dockerfile
+    working_dir: /app
     env_file:
       - .env
     environment:
@@ -52,9 +53,9 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./backend:/app
       - bundles:/app/bundles
-      - media:/app/media
+      - ./media:/app/media
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     networks:
       - app_network

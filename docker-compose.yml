@@ -22,17 +22,18 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    working_dir: /app/frontend
+    working_dir: /app
     volumes:
       - bundles:/app/bundles
-    command: sh -c "./node_modules/.bin/parcel build bundles-src/index.js --dist-dir ../bundles --public-url='./'"
+    command: sh -c "./node_modules/.bin/parcel build bundles-src/index.js --dist-dir ./bundles --public-url='./'"
     networks:
       - app_network
 
   django:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: backend/Dockerfile
+    working_dir: /app
     env_file:
       - .env
     environment:
@@ -46,7 +47,7 @@ services:
       - bundles:/app/bundles
       - staticfiles:/app/staticfiles
       - media:/app/media
-    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn -w 3 -b 0.0.0.0:8000 star_burger.wsgi:application"
+    command: sh -c "gunicorn -w 3 -b 0.0.0.0:8000 star_burger.wsgi:application"
     restart: unless-stopped
     networks:
       - app_network

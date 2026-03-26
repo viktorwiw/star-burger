@@ -1,8 +1,5 @@
 FROM node:17-bullseye
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
 WORKDIR /app
 
 RUN apt-get update \

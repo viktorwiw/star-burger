@@ -370,6 +370,24 @@ cp nginx/http.conf nginx/default.conf
 docker compose up -d --build
 ```
 
+Миграции применить командой
+
+```bash
+docker compose exec django python manage.py migrate
+```
+
+Собрать статику командой
+
+```bash
+docker compose exec django python manage.py collectstatic --noinput
+```
+
+Перезагрузить nginx
+
+```bash
+docker compose restart nginx
+```
+
 ---
 
 ### Выпуск SSL сертификата
@@ -416,7 +434,7 @@ docker compose run --rm certbot renew --dry-run
 ### Деплой обновлений
 
 ```bash
-bash deploy/deploy.sh
+bash deploy.sh
 ```
 
 ---

@@ -452,7 +452,7 @@ rsync -avz ./media/ root@SERVER_IP:/opt/star-burger/media/
 Загрузить в volume:
 
 ```bash
-bash deploy/load_media_to_volume.sh
+bash load_media_to_volume.sh
 ```
 
 ---
